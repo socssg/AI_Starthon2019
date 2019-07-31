@@ -31,14 +31,26 @@ class MultimodalDataset(Dataset):
         #print('phase: ', phase)
         #print('path: ', os.path.join(root, self.phase, phase.split('_')[0]+'_data'))
         
-        self.shot_list = alphanumeric_sort(os.listdir(os.path.join(root, self.phase, phase.split('_')[0]+'_data')))
-        print(len(self.shot_list))
         
-        if self.phase == 'train':
-            label_tot = pd.read_csv(os.path.join(root, self.phase, phase.split('_')[0]+'_label'))
-            self.labels = dict()
-            self.labels['emotion'] = list(label_tot.emotion)
-            self.labels['age'] = list(label_tot.age)
+        label_tot = pd.read_csv(os.path.join(root, self.phase, phase.split('_')[0]+'_label'))
+        self.labels = dict()
+        self.labels['emotion'] = []
+        self.labels['age'] = []
+        labels_emotion = list(label_tot.emotion)
+        labels_age = list(label_tot.age)
+        
+        temp_shot_list = alphanumeric_sort(os.listdir(os.path.join(root, self.phase, phase.split('_')[0]+'_data')))
+        self.shot_list = []
+        for i, shot_path in enumerate(temp_shot_list) :
+            shot_path = os.path.join(self.root, self.phase, self.phase.split('_')[0] + '_data', shot_path)
+            img_name_list = os.listdir(shot_path)
+            for img_name in img_name_list:
+                self.shot_list.append(os.path.join(self.root, self.phase, self.phase.split('_')[0] + '_data', shot_path,img_name))
+                self.labels['emotion'].append(labels_emotion[i])
+                self.labels['age'].append(labels_age[i])
+
+        print(len(self.shot_list))
+
 
     def __len__(self):
         return len(self.shot_list)
@@ -46,7 +58,7 @@ class MultimodalDataset(Dataset):
     def __getitem__(self, idx):
         if self.phase == 'train':
             shot_path = os.path.join(self.root, self.phase, self.phase.split('_')[0]+'_data', self.shot_list[idx])
-            img_name_list = os.listdir(shot_path)
+            img_name_list = [shot_path]
             for idx, img_name in enumerate(img_name_list):
                 if 'txt' not in img_name:
                     img = Image.open(os.path.join(shot_path, img_name)).resize((320, 180))
