@@ -74,7 +74,7 @@ class MultimodalDataset(Dataset):
             return (imgs, seq_len, label)
         else:
             shot_path = os.path.join(self.root, self.phase, self.phase.split('_')[0]+'_data', self.shot_list[idx])
-            img_name_list = os.listdir(shot_path)
+            img_name_list = [shot_path]
             for idx, img_name in enumerate(img_name_list):
                 if 'txt' not in img_name:
                     img = Image.open(os.path.join(shot_path, img_name)).resize((320, 180))
