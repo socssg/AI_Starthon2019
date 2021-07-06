@@ -55,7 +55,8 @@ class MultimodalDataset(Dataset):
                         imgs = img
                     else:
                         imgs = torch.cat((imgs, img), 0)
-            seq_len = len(img_name_list)
+            #seq_len = len(img_name_list)
+            seq_len = 5
 
             label = self.labels[self.task][idx]
             label = self.label_list.index(label)
@@ -87,6 +88,8 @@ def collate_fn(batch):
     imgs, lens, y = zip(*batch)
     lens = np.array(lens)
     imgs = torch.tensor(pad_sequences(imgs, maxlen=MAX_LEN), dtype=torch.float32)
+    y = tuple([y[0] for i in range(0,len(imgs))])
+    lens = np.array([lens[0] for i in range(0,len(imgs))])
     return imgs, lens, torch.tensor(y, dtype=torch.long)
 
 

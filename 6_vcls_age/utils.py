@@ -14,6 +14,11 @@ def pad_sequences(sequences,
                   value=0.):
     if not hasattr(sequences, '__len__'):
         raise ValueError('`sequences` must be iterable.')
+    if len(sequences) < 5 :
+        sequences_list = list(sequences)
+        while(len(sequences_list) < 5 ):
+            sequences_list.extend(sequences_list)
+        sequences = tuple(sequences_list[0:5])
     lengths = []
     for x in sequences:
         if not hasattr(x, '__len__'):
